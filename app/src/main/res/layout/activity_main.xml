@@ -12,10 +12,7 @@
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fitsSystemWindows="true"><![CDATA[
-
-        >
-    ]]>
+        android:fitsSystemWindows="true">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/materialToolbar"
@@ -27,8 +24,8 @@
 
             <ImageView
                 android:id="@+id/topBarLogo"
-                androud:layout_gravity="center_vertical"
-                android:layout_width="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 app:srcCompat="@drawable/notelylogo" />
 

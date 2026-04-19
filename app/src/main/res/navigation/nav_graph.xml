@@ -3,26 +3,31 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/FirstFragment">
-
+    app:startDestination="@id/fragmentFiles">
     <fragment
-        android:id="@+id/FirstFragment"
-        android:name="com.example.finalexer2grp2.FirstFragment"
-        android:label="@string/first_fragment_label"
-        tools:layout="@layout/fragment_files">
-
+        android:id="@+id/fragmentFiles"
+        android:name="com.example.finalexer2grp2.FragmentFiles"
+        android:label="fragment_files2"
+        tools:layout="@layout/fragment_files" >
         <action
-            android:id="@+id/action_FirstFragment_to_SecondFragment"
-            app:destination="@id/SecondFragment" />
+            android:id="@+id/action_fragmentFiles_to_fragmentView"
+            app:destination="@id/fragmentView" />
+        <action
+            android:id="@+id/action_fragmentFiles_to_fragmentEdit"
+            app:destination="@id/fragmentEdit" />
     </fragment>
     <fragment
-        android:id="@+id/SecondFragment"
-        android:name="com.example.finalexer2grp2.SecondFragment"
-        android:label="@string/second_fragment_label"
-        tools:layout="@layout/fragment_note_editor">
-
+        android:id="@+id/fragmentView"
+        android:name="com.example.finalexer2grp2.FragmentView"
+        android:label="fragment_view2"
+        tools:layout="@layout/fragment_view" >
         <action
-            android:id="@+id/action_SecondFragment_to_FirstFragment"
-            app:destination="@id/FirstFragment" />
+            android:id="@+id/action_fragmentView_to_fragmentEdit"
+            app:destination="@id/fragmentEdit" />
     </fragment>
+    <fragment
+        android:id="@+id/fragmentEdit"
+        android:name="com.example.finalexer2grp2.FragmentEdit"
+        android:label="fragment_fragment_edit"
+        tools:layout="@layout/fragment_edit" />
 </navigation>
