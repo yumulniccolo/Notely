@@ -4,11 +4,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.recyclerview.widget.RecyclerView;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder> {
 
@@ -31,7 +35,8 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
     @NonNull
     @Override
     public FileViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_view_note, parent, false);
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.card_view_note, parent, false);
         return new FileViewHolder(view);
     }
 
@@ -39,15 +44,12 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
     public void onBindViewHolder(@NonNull FileViewHolder holder, int position) {
         File file = filesFiltered.get(position);
         holder.tvFileName.setText(file.getName().replace(".txt", ""));
-        String content = readFileContent(file);
-        holder.tvContentCard.setText(content);
+        holder.tvContentCard.setText(readFileContent(file));
 
         holder.itemView.setOnClickListener(v -> listener.onFileClick(file));
 
         holder.itemView.setOnLongClickListener(v -> {
-            androidx.appcompat.widget.PopupMenu popupMenu =
-                    new androidx.appcompat.widget.PopupMenu(v.getContext(), holder.itemView);
-
+            PopupMenu popupMenu = new PopupMenu(v.getContext(), holder.itemView);
             popupMenu.getMenuInflater().inflate(R.menu.note_context_menu, popupMenu.getMenu());
 
             popupMenu.setOnMenuItemClickListener(item -> {
@@ -69,14 +71,14 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
         });
     }
 
-
     private String readFileContent(File file) {
         try {
-            java.util.Scanner scanner = new java.util.Scanner(file).useDelimiter("\\A");
+            Scanner scanner = new Scanner(file).useDelimiter("\\A");
             String raw = scanner.hasNext() ? scanner.next() : "";
             scanner.close();
-            // strip HTML tags for preview
-            return android.text.Html.fromHtml(raw, android.text.Html.FROM_HTML_MODE_LEGACY).toString().trim();
+            return android.text.Html.fromHtml(raw, android.text.Html.FROM_HTML_MODE_LEGACY)
+                    .toString()
+                    .trim();
         } catch (Exception e) {
             return "Error reading content";
         }
@@ -89,10 +91,12 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
 
     public void filter(String query) {
         filesFiltered.clear();
+
         if (query.isEmpty()) {
             filesFiltered.addAll(files);
         } else {
             String lower = query.toLowerCase();
+
             for (File file : files) {
                 String fileName = file.getName().replace(".txt", "").toLowerCase();
                 String fileContent = readFileContent(file).toLowerCase();
@@ -102,6 +106,7 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
                 }
             }
         }
+
         notifyDataSetChanged();
     }
 

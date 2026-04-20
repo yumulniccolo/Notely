@@ -1,18 +1,16 @@
 package com.example.finalexer2grp2;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
-
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.view.View;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
@@ -41,7 +39,6 @@ public class FragmentFiles extends Fragment {
         etSearch.clearFocus();
         etSearch.setFocusableInTouchMode(true);
 
-        RecyclerView recyclerView = view.findViewById(R.id.recyclerView);
         StaggeredGridLayoutManager layoutManager =
                 new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
@@ -52,7 +49,6 @@ public class FragmentFiles extends Fragment {
 
         loadFiles();
 
-        // search watcher
         etSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -96,6 +92,7 @@ public class FragmentFiles extends Fragment {
                         R.id.action_fragmentFiles_to_fragmentView, bundle
                 );
             }
+
             @Override
             public void onEditClick(File file) {
                 Bundle bundle = new Bundle();
