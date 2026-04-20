@@ -73,6 +73,38 @@ public class MainActivity extends AppCompatActivity {
                 toolbarEditText.setVisibility(android.view.View.GONE);
             }
         });
+    }
+    @Override
+    public boolean onCreateOptionsMenu(android.view.Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
 
+    @Override
+    public boolean onOptionsItemSelected(android.view.MenuItem item) {
+
+        Fragment navHostFragment =
+                getSupportFragmentManager()
+                        .findFragmentById(R.id.navHostFragment);
+
+        Fragment currentFragment =
+                navHostFragment.getChildFragmentManager().getPrimaryNavigationFragment();
+
+        if (currentFragment instanceof FragmentFiles) {
+
+            FragmentFiles fragment = (FragmentFiles) currentFragment;
+
+            if (item.getItemId() == R.id.sort_alpha) {
+                fragment.sortFiles("alpha");
+                return true;
+            }
+
+            if (item.getItemId() == R.id.sort_latest) {
+                fragment.sortFiles("latest");
+                return true;
+            }
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }

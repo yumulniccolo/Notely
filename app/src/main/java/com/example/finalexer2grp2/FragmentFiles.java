@@ -95,4 +95,34 @@ public class FragmentFiles extends Fragment {
 
         recyclerView.setAdapter(adapter);
     }
+
+    public void sortFiles(String mode) {
+        if (adapter == null) return;
+
+        File[] files = requireContext().getFilesDir()
+                .listFiles((dir, name) -> name.endsWith(".txt"));
+
+        List<File> fileList = new ArrayList<>();
+        if (files != null) fileList.addAll(Arrays.asList(files));
+
+        if (mode.equals("alpha")) {
+            fileList.sort((f1, f2) ->
+                    f1.getName().compareToIgnoreCase(f2.getName()));
+        }
+
+        if (mode.equals("latest")) {
+            fileList.sort((f1, f2) ->
+                    Long.compare(f2.lastModified(), f1.lastModified()));
+        }
+
+        adapter = new FileAdapter(fileList, file -> {
+            Bundle bundle = new Bundle();
+            bundle.putString("fileName", file.getName());
+
+            Navigation.findNavController(requireView())
+                    .navigate(R.id.action_fragmentFiles_to_fragmentView, bundle);
+        });
+
+        recyclerView.setAdapter(adapter);
+    }
 }
