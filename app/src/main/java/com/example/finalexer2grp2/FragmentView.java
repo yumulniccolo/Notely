@@ -40,7 +40,6 @@ public class FragmentView extends Fragment {
             fileName = getArguments().getString("fileName");
         }
 
-        // ✅ Load file content
         if (fileName != null && !fileName.isEmpty()) {
             tvTitle.setText(fileName.replace(".txt", ""));
 
@@ -48,27 +47,21 @@ public class FragmentView extends Fragment {
                 FileInputStream fis = requireContext().openFileInput(fileName);
                 InputStreamReader isr = new InputStreamReader(fis);
                 BufferedReader reader = new BufferedReader(isr);
-
                 StringBuilder content = new StringBuilder();
                 String line;
-
                 while ((line = reader.readLine()) != null) {
                     content.append(line).append("\n");
                 }
-
                 reader.close();
-                tvContent.setText(content.toString());
-
+                tvContent.setText(android.text.Html.fromHtml(content.toString(), android.text.Html.FROM_HTML_MODE_LEGACY));
             } catch (Exception e) {
                 tvContent.setText("Error loading file");
             }
         }
 
-        // ✅ Navigate to Edit
         fabEdit.setOnClickListener(v -> {
             Bundle bundle = new Bundle();
             bundle.putString("fileName", fileName);
-
             Navigation.findNavController(v).navigate(
                     R.id.action_fragmentView_to_fragmentEdit,
                     bundle
