@@ -20,14 +20,18 @@
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorSurface"
             android:minHeight="?attr/actionBarSize"
-            android:theme="?attr/actionBarTheme">
+            android:theme="?attr/actionBarTheme"
+            app:logo="@drawable/notelylogo">
 
-            <ImageView
-                android:id="@+id/topBarLogo"
-                android:layout_gravity="center_vertical"
+            <EditText
+                android:id="@+id/toolbar_title_edittext"
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                app:srcCompat="@drawable/notelylogo" />
+                android:layout_height="wrap_content"
+                android:hint="Enter title..."
+                android:visibility="gone"
+                android:background="@android:color/transparent"
+                android:imeOptions="actionDone"
+                android:singleLine="true" />
 
         </com.google.android.material.appbar.MaterialToolbar>
     </com.google.android.material.appbar.AppBarLayout>

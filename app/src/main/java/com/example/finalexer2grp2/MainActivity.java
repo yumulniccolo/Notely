@@ -1,28 +1,44 @@
 package com.example.finalexer2grp2;
-
 import android.os.Bundle;
+import android.widget.EditText;
 
-import com.google.android.material.snackbar.Snackbar;
-
+import com.google.android.material.appbar.MaterialToolbar;
 import androidx.appcompat.app.AppCompatActivity;
-
-import android.view.View;
-
 import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
-
-import com.example.finalexer2grp2.databinding.ActivityMainBinding;
-
-import android.view.Menu;
-import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        MaterialToolbar toolbar = findViewById(R.id.materialToolbar);
+        setSupportActionBar(toolbar);
+
+        NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.navHostFragment);
+        NavController navController = navHostFragment.getNavController();
+
+        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
+        NavigationUI.setupWithNavController(toolbar, navController, appBarConfiguration);
+
+
+        EditText toolbarEditText = findViewById(R.id.toolbar_title_edittext);
+
+        navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
+            if (destination.getId() == R.id.fragmentEdit) {
+                toolbar.setLogo(null);
+                getSupportActionBar().setDisplayShowTitleEnabled(false);
+                toolbarEditText.setVisibility(android.view.View.VISIBLE);
+            } else {
+                toolbar.setLogo(R.drawable.notelylogo);
+                getSupportActionBar().setDisplayShowTitleEnabled(true);
+                toolbarEditText.setVisibility(android.view.View.GONE);
+            }
+        });
 
     }
 }

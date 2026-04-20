@@ -10,12 +10,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/tv_noteContent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+        <EditText
+            android:id="@+id/eT_noteContent"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:padding="16dp"
@@ -25,7 +21,13 @@
             android:paddingEnd="16dp"
             android:paddingRight="16dp"
             android:paddingBottom="16dp"
-            android:text="@string/lorem_ipsum" />
+            android:gravity="top|start"
+            android:background="@null"
+            android:inputType="textMultiLine"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab_save"
