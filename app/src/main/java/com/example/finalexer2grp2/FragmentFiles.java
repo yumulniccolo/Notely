@@ -1,5 +1,7 @@
 package com.example.finalexer2grp2;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -18,7 +20,9 @@ import com.google.android.material.textfield.TextInputEditText;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class FragmentFiles extends Fragment {
 
@@ -83,7 +87,9 @@ public class FragmentFiles extends Fragment {
             fileList.addAll(Arrays.asList(files));
         }
 
-        adapter = new FileAdapter(fileList, new FileAdapter.OnFileClickListener() {
+        sortPinnedFirst(fileList);
+
+        adapter = new FileAdapter(requireContext(), fileList, new FileAdapter.OnFileClickListener() {
             @Override
             public void onFileClick(File file) {
                 Bundle bundle = new Bundle();
@@ -110,10 +116,17 @@ public class FragmentFiles extends Fragment {
                         .setNegativeButton("Cancel", null)
                         .setPositiveButton("OK", (dialog, which) -> {
                             if (file.delete()) {
+                                removePinnedFile(file.getName());
                                 loadFiles();
                             }
                         })
                         .show();
+            }
+
+            @Override
+            public void onPinClick(File file) {
+                togglePin(file.getName());
+                loadFiles();
             }
         });
 
@@ -139,7 +152,9 @@ public class FragmentFiles extends Fragment {
                     Long.compare(f2.lastModified(), f1.lastModified()));
         }
 
-        adapter = new FileAdapter(fileList, new FileAdapter.OnFileClickListener() {
+        sortPinnedFirst(fileList);
+
+        adapter = new FileAdapter(requireContext(), fileList, new FileAdapter.OnFileClickListener() {
             @Override
             public void onFileClick(File file) {
                 Bundle bundle = new Bundle();
@@ -166,13 +181,56 @@ public class FragmentFiles extends Fragment {
                         .setNegativeButton("Cancel", null)
                         .setPositiveButton("OK", (dialog, which) -> {
                             if (file.delete()) {
+                                removePinnedFile(file.getName());
                                 loadFiles();
                             }
                         })
                         .show();
             }
+
+            @Override
+            public void onPinClick(File file) {
+                togglePin(file.getName());
+                loadFiles();
+            }
         });
 
         recyclerView.setAdapter(adapter);
+    }
+
+    private void togglePin(String fileName) {
+        SharedPreferences prefs = requireContext().getSharedPreferences("pinned_notes", Context.MODE_PRIVATE);
+        Set<String> pinnedSet = new HashSet<>(prefs.getStringSet("pinned_files", new HashSet<>()));
+
+        if (pinnedSet.contains(fileName)) {
+            pinnedSet.remove(fileName);
+        } else {
+            pinnedSet.add(fileName);
+        }
+
+        prefs.edit().putStringSet("pinned_files", pinnedSet).apply();
+    }
+
+    private void removePinnedFile(String fileName) {
+        SharedPreferences prefs = requireContext().getSharedPreferences("pinned_notes", Context.MODE_PRIVATE);
+        Set<String> pinnedSet = new HashSet<>(prefs.getStringSet("pinned_files", new HashSet<>()));
+
+        if (pinnedSet.contains(fileName)) {
+            pinnedSet.remove(fileName);
+            prefs.edit().putStringSet("pinned_files", pinnedSet).apply();
+        }
+    }
+
+    private void sortPinnedFirst(List<File> fileList) {
+        SharedPreferences prefs = requireContext().getSharedPreferences("pinned_notes", Context.MODE_PRIVATE);
+        Set<String> pinnedSet = prefs.getStringSet("pinned_files", new HashSet<>());
+
+        fileList.sort((f1, f2) -> {
+            boolean f1Pinned = pinnedSet.contains(f1.getName());
+            boolean f2Pinned = pinnedSet.contains(f2.getName());
+
+            if (f1Pinned == f2Pinned) return 0;
+            return f1Pinned ? -1 : 1;
+        });
     }
 }

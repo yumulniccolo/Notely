@@ -1,5 +1,7 @@
 package com.example.finalexer2grp2;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,22 +13,27 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
 
 public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder> {
 
     private List<File> files;
     private List<File> filesFiltered;
     private OnFileClickListener listener;
+    private Context context;
 
     public interface OnFileClickListener {
         void onFileClick(File file);
         void onEditClick(File file);
         void onDeleteClick(File file);
+        void onPinClick(File file);
     }
 
-    public FileAdapter(List<File> files, OnFileClickListener listener) {
+    public FileAdapter(Context context, List<File> files, OnFileClickListener listener) {
+        this.context = context;
         this.files = files;
         this.filesFiltered = new ArrayList<>(files);
         this.listener = listener;
@@ -43,7 +50,13 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
     @Override
     public void onBindViewHolder(@NonNull FileViewHolder holder, int position) {
         File file = filesFiltered.get(position);
-        holder.tvFileName.setText(file.getName().replace(".txt", ""));
+
+        String title = file.getName().replace(".txt", "");
+        if (isPinned(file.getName())) {
+            title = "📌 " + title;
+        }
+
+        holder.tvFileName.setText(title);
         holder.tvContentCard.setText(readFileContent(file));
 
         holder.itemView.setOnClickListener(v -> listener.onFileClick(file));
@@ -52,10 +65,19 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
             PopupMenu popupMenu = new PopupMenu(v.getContext(), holder.itemView);
             popupMenu.getMenuInflater().inflate(R.menu.note_context_menu, popupMenu.getMenu());
 
+            if (isPinned(file.getName())) {
+                popupMenu.getMenu().findItem(R.id.menu_pin).setTitle("Unpin");
+            } else {
+                popupMenu.getMenu().findItem(R.id.menu_pin).setTitle("Pin");
+            }
+
             popupMenu.setOnMenuItemClickListener(item -> {
                 int id = item.getItemId();
 
-                if (id == R.id.menu_edit) {
+                if (id == R.id.menu_pin) {
+                    listener.onPinClick(file);
+                    return true;
+                } else if (id == R.id.menu_edit) {
                     listener.onEditClick(file);
                     return true;
                 } else if (id == R.id.menu_delete) {
@@ -69,6 +91,12 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
             popupMenu.show();
             return true;
         });
+    }
+
+    private boolean isPinned(String fileName) {
+        SharedPreferences prefs = context.getSharedPreferences("pinned_notes", Context.MODE_PRIVATE);
+        Set<String> pinnedSet = prefs.getStringSet("pinned_files", new HashSet<>());
+        return pinnedSet.contains(fileName);
     }
 
     private String readFileContent(File file) {

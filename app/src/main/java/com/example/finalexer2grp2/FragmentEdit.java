@@ -1,8 +1,10 @@
 package com.example.finalexer2grp2;
 
-import android.graphics.Rect;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.widget.LinearLayout;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
@@ -11,19 +13,20 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
 import android.view.View;
-import android.widget.EditText;
-import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.HashSet;
+import java.util.Set;
 
 public class FragmentEdit extends Fragment {
 
     private boolean isDirty = false;
     private String originalContent = "";
-    private EditText etContent; // class field
+    private String originalFileName = null;
+    private EditText etContent;
 
     public FragmentEdit() {
         super(R.layout.fragment_edit);
@@ -37,16 +40,15 @@ public class FragmentEdit extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        etContent = view.findViewById(R.id.eT_noteContent); // assign to class field
+        etContent = view.findViewById(R.id.eT_noteContent);
         FloatingActionButton fabSave = view.findViewById(R.id.fab_save);
         EditText etTitle = getActivity().findViewById(R.id.toolbar_title_edittext);
 
-        // get passed filename
-        String fileName = getArguments() != null ? getArguments().getString("fileName") : null;
+        originalFileName = getArguments() != null ? getArguments().getString("fileName") : null;
 
-        if (fileName != null && !fileName.isEmpty()) {
-            loadFile(fileName, etContent);
-            etTitle.setText(fileName.replace(".txt", ""));
+        if (originalFileName != null && !originalFileName.isEmpty()) {
+            loadFile(originalFileName, etContent);
+            etTitle.setText(originalFileName.replace(".txt", ""));
         } else {
             etTitle.setText("");
         }
@@ -58,21 +60,27 @@ public class FragmentEdit extends Fragment {
             public void afterTextChanged(android.text.Editable s) {
                 isDirty = !s.toString().equals(originalContent);
             }
-            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
         });
 
-        // save button
         fabSave.setOnClickListener(v -> {
             String newFileName = etTitle.getText().toString().trim();
+
             if (newFileName.isEmpty()) {
                 Toast.makeText(getContext(), "Please enter a title", Toast.LENGTH_SHORT).show();
                 return;
             }
+
             saveToFile(newFileName + ".txt");
         });
 
-        // back pressed
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
@@ -81,26 +89,43 @@ public class FragmentEdit extends Fragment {
                     requireActivity().getOnBackPressedDispatcher().onBackPressed();
                     return;
                 }
+
                 new androidx.appcompat.app.AlertDialog.Builder(requireContext())
                         .setTitle("Exit?")
                         .setMessage("You have unsaved changes. Exit anyway?")
                         .setPositiveButton("Yes", (d, w) -> {
                             Navigation.findNavController(requireView()).navigateUp();
                         })
-                        .setNegativeButton("No", null).show();
+                        .setNegativeButton("No", null)
+                        .show();
             }
         });
     }
 
-    private void saveToFile(String fileName) {
+    private void saveToFile(String newFileName) {
         try {
-            File file = new File(getContext().getFilesDir(), fileName);
-            FileOutputStream writer = new FileOutputStream(file);
+            File newFile = new File(getContext().getFilesDir(), newFileName);
+            FileOutputStream writer = new FileOutputStream(newFile);
 
-            // save as plain text
             String content = etContent.getText().toString();
             writer.write(content.getBytes());
             writer.close();
+
+            if (originalFileName != null
+                    && !originalFileName.isEmpty()
+                    && !originalFileName.equals(newFileName)) {
+
+                updatePinnedFileName(originalFileName, newFileName);
+
+                File oldFile = new File(getContext().getFilesDir(), originalFileName);
+                if (oldFile.exists()) {
+                    oldFile.delete();
+                }
+            }
+
+            originalFileName = newFileName;
+            originalContent = content;
+            isDirty = false;
 
             Toast.makeText(getContext(), "Saved!", Toast.LENGTH_SHORT).show();
             Navigation.findNavController(getView()).navigateUp();
@@ -111,6 +136,17 @@ public class FragmentEdit extends Fragment {
         }
     }
 
+    private void updatePinnedFileName(String oldFileName, String newFileName) {
+        SharedPreferences prefs = requireContext().getSharedPreferences("pinned_notes", Context.MODE_PRIVATE);
+        Set<String> pinnedSet = new HashSet<>(prefs.getStringSet("pinned_files", new HashSet<>()));
+
+        if (pinnedSet.contains(oldFileName)) {
+            pinnedSet.remove(oldFileName);
+            pinnedSet.add(newFileName);
+            prefs.edit().putStringSet("pinned_files", pinnedSet).apply();
+        }
+    }
+
     private void loadFile(String fileName, EditText etContent) {
         try {
             File file = new File(getContext().getFilesDir(), fileName);
@@ -118,7 +154,6 @@ public class FragmentEdit extends Fragment {
             String content = scanner.hasNext() ? scanner.next() : "";
             scanner.close();
 
-            // load as plain text
             etContent.setText(content);
 
         } catch (Exception e) {
