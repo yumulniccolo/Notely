@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -40,7 +41,10 @@ public class FragmentFiles extends Fragment {
         etSearch.clearFocus();
         etSearch.setFocusableInTouchMode(true);
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        RecyclerView recyclerView = view.findViewById(R.id.recyclerView);
+        StaggeredGridLayoutManager layoutManager =
+                new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        recyclerView.setLayoutManager(layoutManager);
 
         fabAdd.setOnClickListener(v -> {
             Navigation.findNavController(v).navigate(R.id.action_fragmentFiles_to_fragmentEdit);
@@ -87,6 +91,36 @@ public class FragmentFiles extends Fragment {
             Navigation.findNavController(requireView()).navigate(
                     R.id.action_fragmentFiles_to_fragmentView, bundle
             );
+        });
+
+        recyclerView.setAdapter(adapter);
+    }
+
+    public void sortFiles(String mode) {
+        if (adapter == null) return;
+
+        File[] files = requireContext().getFilesDir()
+                .listFiles((dir, name) -> name.endsWith(".txt"));
+
+        List<File> fileList = new ArrayList<>();
+        if (files != null) fileList.addAll(Arrays.asList(files));
+
+        if (mode.equals("alpha")) {
+            fileList.sort((f1, f2) ->
+                    f1.getName().compareToIgnoreCase(f2.getName()));
+        }
+
+        if (mode.equals("latest")) {
+            fileList.sort((f1, f2) ->
+                    Long.compare(f2.lastModified(), f1.lastModified()));
+        }
+
+        adapter = new FileAdapter(fileList, file -> {
+            Bundle bundle = new Bundle();
+            bundle.putString("fileName", file.getName());
+
+            Navigation.findNavController(requireView())
+                    .navigate(R.id.action_fragmentFiles_to_fragmentView, bundle);
         });
 
         recyclerView.setAdapter(adapter);

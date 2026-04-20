@@ -1,4 +1,5 @@
 package com.example.finalexer2grp2;
+
 import android.os.Bundle;
 import android.widget.EditText;
 
@@ -20,11 +21,14 @@ public class MainActivity extends AppCompatActivity {
         MaterialToolbar toolbar = findViewById(R.id.materialToolbar);
         setSupportActionBar(toolbar);
 
-        NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.navHostFragment);
+        NavHostFragment navHostFragment =
+                (NavHostFragment) getSupportFragmentManager()
+                        .findFragmentById(R.id.navHostFragment);
 
         NavController navController = navHostFragment.getNavController();
 
-        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(R.id.fragmentFiles).build();
+        AppBarConfiguration appBarConfiguration =
+                new AppBarConfiguration.Builder(R.id.fragmentFiles).build();
 
         NavigationUI.setupWithNavController(toolbar, navController, appBarConfiguration);
 
@@ -39,16 +43,21 @@ public class MainActivity extends AppCompatActivity {
                                 .getChildFragmentManager()
                                 .getPrimaryNavigationFragment();
 
-                new androidx.appcompat.app.AlertDialog.Builder(this)
-                        .setTitle("Exit?")
-                        .setMessage("You have unsaved changes. Exit anyway?")
-                        .setPositiveButton("Yes", (d, w) -> navController.navigateUp())
-                        .setNegativeButton("No", null)
-                        .show();
+                if (currentFragment instanceof FragmentEdit) {
 
-            } else {
-                navController.navigateUp();
+                    if (((FragmentEdit) currentFragment).hasUnsavedChanges()) {
+                        new androidx.appcompat.app.AlertDialog.Builder(this)
+                                .setTitle("Exit?")
+                                .setMessage("You have unsaved changes. Exit anyway?")
+                                .setPositiveButton("Yes", (d, w) -> navController.navigateUp())
+                                .setNegativeButton("No", null)
+                                .show();
+                        return;
+                    }
+                }
             }
+
+            navController.navigateUp();
         });
 
         EditText toolbarEditText = findViewById(R.id.toolbar_title_edittext);
@@ -64,6 +73,38 @@ public class MainActivity extends AppCompatActivity {
                 toolbarEditText.setVisibility(android.view.View.GONE);
             }
         });
+    }
+    @Override
+    public boolean onCreateOptionsMenu(android.view.Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
 
+    @Override
+    public boolean onOptionsItemSelected(android.view.MenuItem item) {
+
+        Fragment navHostFragment =
+                getSupportFragmentManager()
+                        .findFragmentById(R.id.navHostFragment);
+
+        Fragment currentFragment =
+                navHostFragment.getChildFragmentManager().getPrimaryNavigationFragment();
+
+        if (currentFragment instanceof FragmentFiles) {
+
+            FragmentFiles fragment = (FragmentFiles) currentFragment;
+
+            if (item.getItemId() == R.id.sort_alpha) {
+                fragment.sortFiles("alpha");
+                return true;
+            }
+
+            if (item.getItemId() == R.id.sort_latest) {
+                fragment.sortFiles("latest");
+                return true;
+            }
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }
