@@ -28,21 +28,21 @@ public class FragmentView extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        TextView tvTitle = view.findViewById(R.id.tv_noteTitle);
         TextView tvContent = view.findViewById(R.id.tv_noteContent);
         FloatingActionButton fabEdit = view.findViewById(R.id.fab_save);
 
-        // hide toolbar edittext when viewing
+        // Access the toolbar title EditText
         EditText etToolbarTitle = getActivity().findViewById(R.id.toolbar_title_edittext);
-        etToolbarTitle.setVisibility(View.GONE);
 
         if (getArguments() != null) {
             fileName = getArguments().getString("fileName");
         }
 
-        // ✅ Load file content
+        // ✅ Load file content and set Title
         if (fileName != null && !fileName.isEmpty()) {
-            tvTitle.setText(fileName.replace(".txt", ""));
+            if (etToolbarTitle != null) {
+                etToolbarTitle.setText(fileName.replace(".txt", ""));
+            }
 
             try {
                 FileInputStream fis = requireContext().openFileInput(fileName);
