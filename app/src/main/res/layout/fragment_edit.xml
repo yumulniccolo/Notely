@@ -15,32 +15,77 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:padding="16dp"
-            android:paddingStart="16dp"
-            android:paddingLeft="16dp"
-            android:paddingTop="16dp"
-            android:paddingEnd="16dp"
-            android:paddingRight="16dp"
-            android:paddingBottom="16dp"
             android:gravity="top|start"
             android:background="@null"
             android:inputType="textMultiLine"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/formattingToolbar"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab_save"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/formattingToolbar"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:clickable="true"
+            android:orientation="horizontal"
+            android:background="?attr/colorSurface"
+            android:elevation="4dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.954"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.976"
-            app:srcCompat="@android:drawable/ic_menu_save"
-            tools:layout_editor_absoluteX="339dp" />
+            app:layout_constraintStart_toStartOf="parent">
+
+            <Button
+                android:id="@+id/btnBold"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:layout_margin="2dp"
+                android:text="B"
+                android:textStyle="bold"
+                android:paddingTop="0dp"
+                android:paddingBottom="0dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp" />
+
+            <Button
+                android:id="@+id/btnItalic"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:layout_margin="2dp"
+                android:text="I"
+                android:textStyle="italic"
+                android:paddingTop="0dp"
+                android:paddingBottom="0dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp" />
+
+            <Button
+                android:id="@+id/btnUnderline"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:layout_margin="2dp"
+                android:text="U"
+                android:paddingTop="0dp"
+                android:paddingBottom="0dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fab_save"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="2dp"
+                android:layout_gravity="end"
+                app:fabSize="mini"
+                app:srcCompat="@android:drawable/ic_menu_save" />
+
+        </LinearLayout>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

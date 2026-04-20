@@ -45,7 +45,10 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
     private String readFileContent(File file) {
         try {
             java.util.Scanner scanner = new java.util.Scanner(file).useDelimiter("\\A");
-            return scanner.hasNext() ? scanner.next() : "";
+            String raw = scanner.hasNext() ? scanner.next() : "";
+            scanner.close();
+            // strip HTML tags for preview
+            return android.text.Html.fromHtml(raw, android.text.Html.FROM_HTML_MODE_LEGACY).toString().trim();
         } catch (Exception e) {
             return "Error reading content";
         }
