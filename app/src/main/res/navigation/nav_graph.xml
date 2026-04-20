@@ -12,6 +12,9 @@
         <action
             android:id="@+id/action_fragmentFiles_to_fragmentView"
             app:destination="@id/fragmentView" />
+        <action
+            android:id="@+id/action_fragmentFiles_to_fragmentEdit"
+            app:destination="@id/fragmentEdit" />
     </fragment>
     <fragment
         android:id="@+id/fragmentView"
