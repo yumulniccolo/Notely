@@ -59,10 +59,11 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
         holder.tvFileName.setText(title);
         holder.tvContentCard.setText(readFileContent(file));
 
-        holder.itemView.setOnClickListener(v -> listener.onFileClick(file));
+        // Click the whole card
+        holder.cardView.setOnClickListener(v -> listener.onFileClick(file));
 
-        holder.itemView.setOnLongClickListener(v -> {
-            PopupMenu popupMenu = new PopupMenu(v.getContext(), holder.itemView);
+        holder.cardView.setOnLongClickListener(v -> {
+            PopupMenu popupMenu = new PopupMenu(v.getContext(), holder.cardView);
             popupMenu.getMenuInflater().inflate(R.menu.note_context_menu, popupMenu.getMenu());
 
             if (isPinned(file.getName())) {
@@ -141,11 +142,13 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
     static class FileViewHolder extends RecyclerView.ViewHolder {
         TextView tvFileName;
         TextView tvContentCard;
+        androidx.cardview.widget.CardView cardView;
 
         public FileViewHolder(@NonNull View itemView) {
             super(itemView);
             tvFileName = itemView.findViewById(R.id.tvTitleCard);
             tvContentCard = itemView.findViewById(R.id.tvContentCard);
+            cardView = itemView.findViewById(R.id.cv_card);
         }
     }
 }
