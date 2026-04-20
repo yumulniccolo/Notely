@@ -9,9 +9,12 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.textfield.TextInputEditText;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -33,6 +36,7 @@ public class FragmentFiles extends Fragment {
 
         FloatingActionButton fabAdd = view.findViewById(R.id.fabAddNote);
         recyclerView = view.findViewById(R.id.recyclerView);
+        TextInputEditText etSearch = view.findViewById(R.id.etSearch);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -41,6 +45,22 @@ public class FragmentFiles extends Fragment {
         });
 
         loadFiles();
+
+        // search watcher
+        etSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (adapter != null) {
+                    adapter.filter(s.toString());
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
     }
 
     @Override
@@ -60,11 +80,11 @@ public class FragmentFiles extends Fragment {
         }
 
         adapter = new FileAdapter(fileList, file -> {
-
             Bundle bundle = new Bundle();
             bundle.putString("fileName", file.getName());
-
-            Navigation.findNavController(requireView()).navigate(R.id.action_fragmentFiles_to_fragmentEdit, bundle);
+            Navigation.findNavController(requireView()).navigate(
+                    R.id.action_fragmentFiles_to_fragmentEdit, bundle
+            );
         });
 
         recyclerView.setAdapter(adapter);

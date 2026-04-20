@@ -7,11 +7,13 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder> {
 
     private List<File> files;
+    private List<File> filesFiltered;
     private OnFileClickListener listener;
 
     public interface OnFileClickListener {
@@ -20,6 +22,7 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
 
     public FileAdapter(List<File> files, OnFileClickListener listener) {
         this.files = files;
+        this.filesFiltered = new ArrayList<>(files);
         this.listener = listener;
     }
 
@@ -32,10 +35,8 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull FileViewHolder holder, int position) {
-        File file = files.get(position);
-        holder.tvFileName.setText(file.getName());
-        holder.itemView.setOnClickListener(v -> listener.onFileClick(file));
-
+        File file = filesFiltered.get(position);
+        holder.tvFileName.setText(file.getName().replace(".txt", ""));
         String content = readFileContent(file);
         holder.tvContentCard.setText(content);
         holder.itemView.setOnClickListener(v -> listener.onFileClick(file));
@@ -52,13 +53,30 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
 
     @Override
     public int getItemCount() {
-        return files.size();
+        return filesFiltered.size();
+    }
+
+    public void filter(String query) {
+        filesFiltered.clear();
+        if (query.isEmpty()) {
+            filesFiltered.addAll(files);
+        } else {
+            String lower = query.toLowerCase();
+            for (File file : files) {
+                String fileName = file.getName().replace(".txt", "").toLowerCase();
+                String fileContent = readFileContent(file).toLowerCase();
+
+                if (fileName.contains(lower) || fileContent.contains(lower)) {
+                    filesFiltered.add(file);
+                }
+            }
+        }
+        notifyDataSetChanged();
     }
 
     static class FileViewHolder extends RecyclerView.ViewHolder {
         TextView tvFileName;
         TextView tvContentCard;
-
 
         public FileViewHolder(@NonNull View itemView) {
             super(itemView);
