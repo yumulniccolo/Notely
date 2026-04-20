@@ -30,12 +30,10 @@ public class FragmentView extends Fragment {
         TextView tvContent = view.findViewById(R.id.tv_noteContent);
         FloatingActionButton fabEdit = view.findViewById(R.id.fab_save);
 
-        // ✅ Get fileName from bundle
         if (getArguments() != null) {
             fileName = getArguments().getString("fileName");
         }
 
-        // ✅ Load file content
         if (fileName != null && !fileName.isEmpty()) {
             try {
                 FileInputStream fis = requireContext().openFileInput(fileName);
@@ -57,7 +55,6 @@ public class FragmentView extends Fragment {
             }
         }
 
-        // ✅ Navigate to Edit
         fabEdit.setOnClickListener(v -> {
             Bundle bundle = new Bundle();
             bundle.putString("fileName", fileName);
