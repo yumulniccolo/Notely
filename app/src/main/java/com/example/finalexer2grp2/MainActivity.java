@@ -28,6 +28,29 @@ public class MainActivity extends AppCompatActivity {
 
         NavigationUI.setupWithNavController(toolbar, navController, appBarConfiguration);
 
+        toolbar.setNavigationOnClickListener(v -> {
+
+            if (navController.getCurrentDestination() != null &&
+                    navController.getCurrentDestination().getId() == R.id.fragmentEdit) {
+
+                Fragment currentFragment =
+                        getSupportFragmentManager()
+                                .findFragmentById(R.id.navHostFragment)
+                                .getChildFragmentManager()
+                                .getPrimaryNavigationFragment();
+
+                new androidx.appcompat.app.AlertDialog.Builder(this)
+                        .setTitle("Exit?")
+                        .setMessage("You have unsaved changes. Exit anyway?")
+                        .setPositiveButton("Yes", (d, w) -> navController.navigateUp())
+                        .setNegativeButton("No", null)
+                        .show();
+
+            } else {
+                navController.navigateUp();
+            }
+        });
+
         EditText toolbarEditText = findViewById(R.id.toolbar_title_edittext);
 
         navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
