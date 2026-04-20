@@ -4,6 +4,7 @@ import android.widget.EditText;
 
 import com.google.android.material.appbar.MaterialToolbar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -20,11 +21,12 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.navHostFragment);
+
         NavController navController = navHostFragment.getNavController();
 
-        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
-        NavigationUI.setupWithNavController(toolbar, navController, appBarConfiguration);
+        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(R.id.fragmentFiles).build();
 
+        NavigationUI.setupWithNavController(toolbar, navController, appBarConfiguration);
 
         EditText toolbarEditText = findViewById(R.id.toolbar_title_edittext);
 

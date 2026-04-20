@@ -28,6 +28,11 @@
     <fragment
         android:id="@+id/fragmentEdit"
         android:name="com.example.finalexer2grp2.FragmentEdit"
-        android:label="fragment_fragment_edit"
-        tools:layout="@layout/fragment_edit" />
+        tools:layout="@layout/fragment_edit">
+
+        <argument
+            android:name="fileName"
+            app:argType="string"
+            android:defaultValue="" />
+    </fragment>
 </navigation>
