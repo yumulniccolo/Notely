@@ -37,6 +37,8 @@ public class FragmentFiles extends Fragment {
         FloatingActionButton fabAdd = view.findViewById(R.id.fabAddNote);
         recyclerView = view.findViewById(R.id.recyclerView);
         TextInputEditText etSearch = view.findViewById(R.id.etSearch);
+        etSearch.clearFocus();
+        etSearch.setFocusableInTouchMode(true);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
