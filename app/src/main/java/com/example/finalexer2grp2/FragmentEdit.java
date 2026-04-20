@@ -19,6 +19,9 @@ import java.io.FileOutputStream;
 
 public class FragmentEdit extends Fragment {
 
+    private boolean isDirty = false;
+    private String originalContent = "";
+
     public FragmentEdit() {
         super(R.layout.fragment_edit);
     }
@@ -42,6 +45,18 @@ public class FragmentEdit extends Fragment {
             etTitle.setText(""); // new note
         }
 
+        originalContent = etContent.getText().toString();
+
+        etContent.addTextChangedListener(new android.text.TextWatcher() {
+            @Override
+            public void afterTextChanged(android.text.Editable s) {
+                isDirty = !s.toString().equals(originalContent);
+            }
+
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
+        });
+
         // save button
         fabSave.setOnClickListener(v -> {
 
@@ -57,45 +72,27 @@ public class FragmentEdit extends Fragment {
         });
 
         //calling the exitdialog
-        requireActivity().getOnBackPressedDispatcher().addCallback(
-                getViewLifecycleOwner(),
-                new OnBackPressedCallback(true) {
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
                     @Override
                     public void handleOnBackPressed() {
 
-                        new androidx.appcompat.app.AlertDialog.Builder(requireContext())
-                                .setTitle("Exit?")
-                                .setMessage("Are you sure you want to exit without saving?")
+                        //no changes made
+                        if (!isDirty) {
+                            setEnabled(false);
+                            requireActivity().getOnBackPressedDispatcher().onBackPressed();
+                            return;
+                        }
+
+                        //may changes
+                        new androidx.appcompat.app.AlertDialog.Builder(requireContext()).setTitle("Exit?")
+                                .setMessage("You have unsaved changes. Exit anyway?")
                                 .setPositiveButton("Yes", (d, w) -> {
-                                    setEnabled(false);
-                                    requireActivity().getOnBackPressedDispatcher().onBackPressed();
+                                    Navigation.findNavController(requireView()).navigateUp();
                                 })
                                 .setNegativeButton("No", null).show();
                     }
                 }
         );
-    }
-    @Override
-    public boolean onOptionsItemSelected(@NonNull android.view.MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            showExitDialog();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    // exit confirmation message
-    private void showExitDialog() {
-        new androidx.appcompat.app.AlertDialog.Builder(requireContext())
-                .setTitle("Exit?")
-                .setMessage("Are you sure you want to exit without saving?")
-                .setPositiveButton("Yes", (d, w) -> {
-                    requireActivity()
-                            .getOnBackPressedDispatcher()
-                            .onBackPressed();
-                })
-                .setNegativeButton("No", null)
-                .show();
     }
     private void saveToFile(String fileName, String content) {
         try {
