@@ -8,6 +8,7 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cv_card"
+        android:longClickable="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
@@ -22,7 +23,7 @@
         <LinearLayout
             android:id="@+id/linelayvert_card"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical"
             android:padding="16dp"
             android:paddingStart="16dp"

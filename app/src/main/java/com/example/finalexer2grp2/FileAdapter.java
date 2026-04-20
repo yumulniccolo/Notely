@@ -18,6 +18,8 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
 
     public interface OnFileClickListener {
         void onFileClick(File file);
+        void onEditClick(File file);
+        void onDeleteClick(File file);
     }
 
     public FileAdapter(List<File> files, OnFileClickListener listener) {
@@ -39,8 +41,34 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
         holder.tvFileName.setText(file.getName().replace(".txt", ""));
         String content = readFileContent(file);
         holder.tvContentCard.setText(content);
+
         holder.itemView.setOnClickListener(v -> listener.onFileClick(file));
+
+        holder.itemView.setOnLongClickListener(v -> {
+            androidx.appcompat.widget.PopupMenu popupMenu =
+                    new androidx.appcompat.widget.PopupMenu(v.getContext(), holder.itemView);
+
+            popupMenu.getMenuInflater().inflate(R.menu.note_context_menu, popupMenu.getMenu());
+
+            popupMenu.setOnMenuItemClickListener(item -> {
+                int id = item.getItemId();
+
+                if (id == R.id.menu_edit) {
+                    listener.onEditClick(file);
+                    return true;
+                } else if (id == R.id.menu_delete) {
+                    listener.onDeleteClick(file);
+                    return true;
+                }
+
+                return false;
+            });
+
+            popupMenu.show();
+            return true;
+        });
     }
+
 
     private String readFileContent(File file) {
         try {
