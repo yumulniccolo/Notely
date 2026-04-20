@@ -12,15 +12,15 @@
         <action
             android:id="@+id/action_fragmentFiles_to_fragmentView"
             app:destination="@id/fragmentView" />
-        <action
-            android:id="@+id/action_fragmentFiles_to_fragmentEdit"
-            app:destination="@id/fragmentEdit" />
     </fragment>
     <fragment
         android:id="@+id/fragmentView"
         android:name="com.example.finalexer2grp2.FragmentView"
         android:label="fragment_view2"
         tools:layout="@layout/fragment_view" >
+        <argument
+            android:name="fileName"
+            app:argType="string" />
         <action
             android:id="@+id/action_fragmentView_to_fragmentEdit"
             app:destination="@id/fragmentEdit" />

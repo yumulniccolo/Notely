@@ -43,7 +43,7 @@ public class FragmentFiles extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         fabAdd.setOnClickListener(v -> {
-            Navigation.findNavController(v).navigate(R.id.action_fragmentFiles_to_fragmentEdit);
+            Navigation.findNavController(v).navigate(R.id.action_fragmentFiles_to_fragmentView);
         });
 
         loadFiles();
@@ -85,7 +85,7 @@ public class FragmentFiles extends Fragment {
             Bundle bundle = new Bundle();
             bundle.putString("fileName", file.getName());
             Navigation.findNavController(requireView()).navigate(
-                    R.id.action_fragmentFiles_to_fragmentEdit, bundle
+                    R.id.action_fragmentFiles_to_fragmentView, bundle
             );
         });
 
