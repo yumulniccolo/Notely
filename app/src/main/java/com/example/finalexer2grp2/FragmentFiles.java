@@ -1,18 +1,16 @@
 package com.example.finalexer2grp2;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
-
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.view.View;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
@@ -41,7 +39,6 @@ public class FragmentFiles extends Fragment {
         etSearch.clearFocus();
         etSearch.setFocusableInTouchMode(true);
 
-        RecyclerView recyclerView = view.findViewById(R.id.recyclerView);
         StaggeredGridLayoutManager layoutManager =
                 new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
@@ -52,10 +49,10 @@ public class FragmentFiles extends Fragment {
 
         loadFiles();
 
-        // search watcher
         etSearch.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -65,7 +62,8 @@ public class FragmentFiles extends Fragment {
             }
 
             @Override
-            public void afterTextChanged(Editable s) {}
+            public void afterTextChanged(Editable s) {
+            }
         });
     }
 
@@ -85,12 +83,38 @@ public class FragmentFiles extends Fragment {
             fileList.addAll(Arrays.asList(files));
         }
 
-        adapter = new FileAdapter(fileList, file -> {
-            Bundle bundle = new Bundle();
-            bundle.putString("fileName", file.getName());
-            Navigation.findNavController(requireView()).navigate(
-                    R.id.action_fragmentFiles_to_fragmentView, bundle
-            );
+        adapter = new FileAdapter(fileList, new FileAdapter.OnFileClickListener() {
+            @Override
+            public void onFileClick(File file) {
+                Bundle bundle = new Bundle();
+                bundle.putString("fileName", file.getName());
+                Navigation.findNavController(requireView()).navigate(
+                        R.id.action_fragmentFiles_to_fragmentView, bundle
+                );
+            }
+
+            @Override
+            public void onEditClick(File file) {
+                Bundle bundle = new Bundle();
+                bundle.putString("fileName", file.getName());
+                Navigation.findNavController(requireView()).navigate(
+                        R.id.action_fragmentFiles_to_fragmentEdit, bundle
+                );
+            }
+
+            @Override
+            public void onDeleteClick(File file) {
+                new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                        .setTitle("Delete Note")
+                        .setMessage("Are you sure you want to delete this note?")
+                        .setNegativeButton("Cancel", null)
+                        .setPositiveButton("OK", (dialog, which) -> {
+                            if (file.delete()) {
+                                loadFiles();
+                            }
+                        })
+                        .show();
+            }
         });
 
         recyclerView.setAdapter(adapter);
@@ -115,12 +139,38 @@ public class FragmentFiles extends Fragment {
                     Long.compare(f2.lastModified(), f1.lastModified()));
         }
 
-        adapter = new FileAdapter(fileList, file -> {
-            Bundle bundle = new Bundle();
-            bundle.putString("fileName", file.getName());
+        adapter = new FileAdapter(fileList, new FileAdapter.OnFileClickListener() {
+            @Override
+            public void onFileClick(File file) {
+                Bundle bundle = new Bundle();
+                bundle.putString("fileName", file.getName());
 
-            Navigation.findNavController(requireView())
-                    .navigate(R.id.action_fragmentFiles_to_fragmentView, bundle);
+                Navigation.findNavController(requireView())
+                        .navigate(R.id.action_fragmentFiles_to_fragmentView, bundle);
+            }
+
+            @Override
+            public void onEditClick(File file) {
+                Bundle bundle = new Bundle();
+                bundle.putString("fileName", file.getName());
+
+                Navigation.findNavController(requireView())
+                        .navigate(R.id.action_fragmentFiles_to_fragmentEdit, bundle);
+            }
+
+            @Override
+            public void onDeleteClick(File file) {
+                new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                        .setTitle("Delete Note")
+                        .setMessage("Are you sure you want to delete this note?")
+                        .setNegativeButton("Cancel", null)
+                        .setPositiveButton("OK", (dialog, which) -> {
+                            if (file.delete()) {
+                                loadFiles();
+                            }
+                        })
+                        .show();
+            }
         });
 
         recyclerView.setAdapter(adapter);
