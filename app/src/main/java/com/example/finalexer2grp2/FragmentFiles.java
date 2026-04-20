@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -40,7 +41,10 @@ public class FragmentFiles extends Fragment {
         etSearch.clearFocus();
         etSearch.setFocusableInTouchMode(true);
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        RecyclerView recyclerView = view.findViewById(R.id.recyclerView);
+        StaggeredGridLayoutManager layoutManager =
+                new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        recyclerView.setLayoutManager(layoutManager);
 
         fabAdd.setOnClickListener(v -> {
             Navigation.findNavController(v).navigate(R.id.action_fragmentFiles_to_fragmentView);
